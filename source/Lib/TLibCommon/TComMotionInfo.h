@@ -100,7 +100,7 @@ public:
 #if COM16_C806_GEN_MRG_IMPROVEMENT || COM16_C806_OBMC || VCEG_AZ07_FRUC_MERGE || JVET_C0024_QTBT
   Bool operator== (const TComMvField& rcMv) const
   {
-    return (m_acMv.getHor()== rcMv.getHor() && m_acMv.getVer()== rcMv.getVer() && m_iRefIdx == rcMv.getRefIdx());
+    return ( m_iRefIdx == rcMv.getRefIdx() && ( m_iRefIdx == -1 || ( m_acMv.getHor() == rcMv.getHor() && m_acMv.getVer() == rcMv.getVer() ) ) );
   }
 #endif
 };
