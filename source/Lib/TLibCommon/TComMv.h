@@ -47,13 +47,23 @@
 // Class definition
 // ====================================================================================================================
 
+#if INT32_MV_PREC
+typedef Int mvc_t; // motion vector component type
+#else
+typedef Short mvc_t; // motion vector component type
+#endif
+
 /// basic motion vector class
 class TComMv
 {
 private:
+#if INT32_MV_PREC
+  mvc_t m_iHor;     ///< horizontal component of motion vector
+  mvc_t m_iVer;     ///< vertical component of motion vector
+#else
   Short m_iHor;     ///< horizontal component of motion vector
   Short m_iVer;     ///< vertical component of motion vector
-
+#endif
 public:
 
   // ------------------------------------------------------------------------------------------------------------------
@@ -66,7 +76,11 @@ public:
   {
   }
 
+#if INT32_MV_PREC
+  TComMv( mvc_t iHor, mvc_t iVer ) :
+#else
   TComMv( Short iHor, Short iVer ) :
+#endif
   m_iHor(iHor),
   m_iVer(iVer)
   {
@@ -76,9 +90,15 @@ public:
   // set
   // ------------------------------------------------------------------------------------------------------------------
 
+#if INT32_MV_PREC
+  Void  set       ( mvc_t iHor, mvc_t iVer)     { m_iHor = iHor;  m_iVer = iVer;            }
+  Void  setHor    ( mvc_t i )                   { m_iHor = i;                               }
+  Void  setVer    ( mvc_t i )                   { m_iVer = i;                               }
+#else
   Void  set       ( Short iHor, Short iVer)     { m_iHor = iHor;  m_iVer = iVer;            }
   Void  setHor    ( Short i )                   { m_iHor = i;                               }
   Void  setVer    ( Short i )                   { m_iVer = i;                               }
+#endif
   Void  setZero   ()                            { m_iHor = m_iVer = 0;  }
 
   // ------------------------------------------------------------------------------------------------------------------
@@ -144,8 +164,8 @@ public:
 
   const TComMv scaleMv( Int iScale ) const
   {
-    Int mvx = Clip3( -32768, 32767, (iScale * getHor() + 127 + (iScale * getHor() < 0)) >> 8 );
-    Int mvy = Clip3( -32768, 32767, (iScale * getVer() + 127 + (iScale * getVer() < 0)) >> 8 );
+    Int mvx = Clip3( -32768, 32767, ( iScale * getHor() + 127 + ( iScale * getHor() < 0 ) ) >> 8 );
+    Int mvy = Clip3( -32768, 32767, ( iScale * getVer() + 127 + ( iScale * getVer() < 0 ) ) >> 8 );
     return TComMv( mvx, mvy );
   }
 

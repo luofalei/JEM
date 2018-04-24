@@ -44,7 +44,10 @@
 
 #include <vector>
 
+// For the transition to VTM
 #define FRUC_FIX                                          1
+#define INT32_MV_PREC                                     1
+// For the transition to VTM
 
 //! \ingroup TLibCommon
 //! \{
