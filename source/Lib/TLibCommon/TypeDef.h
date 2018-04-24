@@ -44,6 +44,8 @@
 
 #include <vector>
 
+#define FRUC_FIX                                          1
+
 //! \ingroup TLibCommon
 //! \{
 ///////////////////////////////////////////////////////////

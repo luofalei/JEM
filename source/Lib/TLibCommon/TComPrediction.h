@@ -315,6 +315,9 @@ protected:
 #if COM16_C806_VCEG_AZ10_SUB_PU_TMVP
     , UInt uiSubBlkRasterIdx , UInt uiSubBlkRasterStep
 #endif
+#if FRUC_FIX
+                              , UInt numPartPerLine, UInt uiFidx
+#endif
     );
 
   UInt xFrucFindBestMvFromList( TComMvField * pBestMvField , RefPicList & rBestRefPicList , TComDataCU * pCU , UInt uiAbsPartIdx , const TComMvField & rMvStart , Int nBlkWidth , Int nBlkHeight , Bool bTM , Bool bMvCost );
