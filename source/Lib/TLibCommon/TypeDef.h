@@ -44,10 +44,13 @@
 
 #include <vector>
 
-// For the transition to VTM
+// For the transition to VTM/BMS
 #define FRUC_FIX                                          1
+#define TRANSITION_TO_VTM_BMS                             0
+#if TRANSITION_TO_VTM_BMS
 #define INT32_MV_PREC                                     1
-// For the transition to VTM
+#endif
+// For the transition to VTM/BMS
 
 //! \ingroup TLibCommon
 //! \{
@@ -1221,6 +1224,23 @@ struct WCGChromaQPControl
   Double chromaQpOffset;  ///< Chroma QP Offset (0.0:default)
 };
 #endif
+
+// For the transition to VTM/BMS
+#if TRANSITION_TO_VTM_BMS
+#ifdef JVET_D0123_ME_CTX_LUT_BITS
+#undef JVET_D0123_ME_CTX_LUT_BITS
+#endif
+#ifdef VCEG_AZ06_IC_SPEEDUP
+#undef VCEG_AZ06_IC_SPEEDUP
+#endif
+#ifdef JVET_B0051_NON_MPM_MODE
+#undef JVET_B0051_NON_MPM_MODE
+#endif
+#define JVET_D0123_ME_CTX_LUT_BITS  0
+#define VCEG_AZ06_IC_SPEEDUP        0
+#define JVET_B0051_NON_MPM_MODE     0
+#endif
+// For the transition to VTM/BMS
 //! \}
 
 #endif
