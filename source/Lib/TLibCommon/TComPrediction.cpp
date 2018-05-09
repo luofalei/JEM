@@ -5270,6 +5270,10 @@ Bool TComPrediction::xFrucRefineSubBlkMv( TComDataCU * pCU , UInt uiDepth , UInt
 #if COM16_C806_VCEG_AZ10_SUB_PU_TMVP
               , uiSubBlkRasterIdx , uiSubBlkRasterStep
 #endif
+#if FRUC_FIX
+              , nWidth >> 2, (UInt)((y >> 2) * (nWidth >> 2) + (x >> 2))
+#endif
+
               );
             UInt uiMinCost = xFrucFindBestMvFromList( mvFinal , eCurRefPicList , pCU , uiSubBlkIdx , mvStart[eCurRefPicList] , nRefineBlockSize , nRefineBlockSize , bTM , true );
             uiMinCost = xFrucRefineMv( mvFinal , eCurRefPicList , uiMinCost , nSearchMethod , pCU , uiSubBlkIdx , mvStart[eCurRefPicList] , nRefineBlockSize , nRefineBlockSize , bTM );
@@ -5285,12 +5289,19 @@ Bool TComPrediction::xFrucRefineSubBlkMv( TComDataCU * pCU , UInt uiDepth , UInt
 #if COM16_C806_VCEG_AZ10_SUB_PU_TMVP
           , uiSubBlkRasterIdx , uiSubBlkRasterStep
 #endif
+#if FRUC_FIX
+          , nWidth >> 2, (UInt)((y >> 2) * (nWidth >> 2) + (x >> 2))
+#endif
           );
 #else
         xFrucCollectSubBlkStartMv( pCU , uiSubBlkIdx , REF_PIC_LIST_0 , mvStart[REF_PIC_LIST_0] , nRefineBlockSize , nRefineBlockSize 
 #if COM16_C806_VCEG_AZ10_SUB_PU_TMVP
           , uiSubBlkRasterIdx , uiSubBlkRasterStep
 #endif
+#if FRUC_FIX
+          , nWidth >> 2, (UInt)((y >> 2) * (nWidth >> 2) + (x >> 2))
+#endif
+
           );
         RefPicList eBestRefPicList = REF_PIC_LIST_0;
 #endif
@@ -5527,6 +5538,9 @@ Void TComPrediction::xFrucCollectSubBlkStartMv( TComDataCU * pCU , UInt uiAbsPar
 #if COM16_C806_VCEG_AZ10_SUB_PU_TMVP
   , UInt uiSubBlkRasterIdx , UInt uiSubBlkRasterStep
 #endif
+#if FRUC_FIX
+  , UInt numPartPerLine, UInt uiFidx
+#endif
   )
 {
   std::list<TComMvField> & rStartMvList = m_listMVFieldCand[eRefPicList];
@@ -5616,6 +5630,36 @@ Void TComPrediction::xFrucCollectSubBlkStartMv( TComDataCU * pCU , UInt uiAbsPar
 #if COM16_C806_VCEG_AZ10_SUB_PU_TMVP
   if( pCU->getSlice()->getSPS()->getAtmvpEnableFlag() )
   {
+#if FRUC_FIX
+    UInt row = nSubBlkHeight >> 2;
+    UInt col = nSubBlkWidth >> 2;
+    for( UInt y = 0; y < row; y++ )
+    {
+      for( UInt x = 0; x < col; x++)
+      {
+        UInt uiIdx = ( ( uiFidx+x+y*numPartPerLine ) << 1 ) + eRefPicList;
+#if JVET_C0035_ATMVP_SIMPLIFICATION
+        if( rMvStart.getRefIdx() == m_cMvFieldSP[MGR_TYPE_SUBPU_ATMVP][uiIdx].getRefIdx() )
+        {
+          xFrucInsertMv2StartList( m_cMvFieldSP[MGR_TYPE_SUBPU_ATMVP][uiIdx] , rStartMvList );
+        }
+        if( rMvStart.getRefIdx() == m_cMvFieldSP[MGR_TYPE_SUBPU_ATMVP_EXT][uiIdx].getRefIdx() )
+        {
+          xFrucInsertMv2StartList( m_cMvFieldSP[MGR_TYPE_SUBPU_ATMVP_EXT][uiIdx] , rStartMvList );
+        }
+#else
+        if( rMvStart.getRefIdx() == m_cMvFieldSP[0][uiIdx].getRefIdx() )
+        {
+          xFrucInsertMv2StartList( m_cMvFieldSP[0][uiIdx] , rStartMvList );
+        }
+        if( rMvStart.getRefIdx() == m_cMvFieldSP[1][uiIdx].getRefIdx() )
+        {
+          xFrucInsertMv2StartList( m_cMvFieldSP[1][uiIdx] , rStartMvList );
+        }
+#endif
+      }
+    }
+#else
 #if JVET_E0060_FRUC_CAND
     for( UInt n = 0 ; n < min(NB_FRUC_CAND_ATMVP, uiSubBlkRasterStep) ; n++ )
 #else
@@ -5643,6 +5687,7 @@ Void TComPrediction::xFrucCollectSubBlkStartMv( TComDataCU * pCU , UInt uiAbsPar
       }
 #endif
     }
+#endif
   }
 #endif
 
